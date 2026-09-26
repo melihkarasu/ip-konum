@@ -3,40 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IP Coğrafi Konum & İstihbarat - Standalone</title>
+  <title>IP Coğrafi Konum & İstihbarat</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23fa520f' stroke='%2344403c' stroke-width='1.5'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='-apple-system,BlinkMacSystemFont,Inter,sans-serif' font-weight='800' font-size='13' letter-spacing='-0.5'%3EMK%3C/text%3E%3C/svg%3E">
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/mistral-theme.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231c1917' stroke='%2344403c' stroke-width='1.5'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='-apple-system,BlinkMacSystemFont,Inter,sans-serif' font-weight='800' font-size='13' letter-spacing='-0.5'%3EMK%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css">
-  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="css/mistral-theme.css">
   <style>
-    :root { --mistral-ink: #1c1917; --mistral-slate: #78716c; --mistral-stone: #a8a29e; --mistral-hairline: #e7e5e4; --mistral-cream: #f5f5f4; --mistral-beige-deep: #d6d3d1; }
-    body { font-family: 'Inter', sans-serif; background-color: #fafaf9; color: var(--mistral-ink); }
-    h1, h2, .font-editorial { font-family: 'Newsreader', serif; }
+    :root {
+      --mistral-ink: #1c1917;
+      --mistral-slate: #78716c;
+      --mistral-stone: #a8a29e;
+      --mistral-hairline: #e7e5e4;
+      --mistral-cream: #f5f5f4;
+      --mistral-cream-deeper: #e7e5e4;
+      --mistral-cream-light: #fafaf9;
+      --mistral-beige-deep: #d6d3d1;
+      --mistral-orange: #fa520f;
+    }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #fafaf9; color: var(--mistral-ink); }
+    h1, h2, h3, h4, .font-editorial { font-family: 'Newsreader', serif; }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .bg-mistral-cream { background-color: var(--mistral-cream); }
+    .bg-mistral-cream-deeper { background-color: var(--mistral-cream-deeper); }
+    .bg-mistral-cream-light { background-color: var(--mistral-cream-light); }
     .text-mistral-ink { color: var(--mistral-ink); }
     .text-mistral-slate { color: var(--mistral-slate); }
     .text-mistral-stone { color: var(--mistral-stone); }
-    .bg-mistral-cream { background-color: var(--mistral-cream); }
+    .text-mistral-orange { color: var(--mistral-orange); }
     .border-mistral-hairline { border-color: var(--mistral-hairline); }
-    .bg-mistral-canvas { background-color: #0f172a; }
+    .border-mistral-beige-deep { border-color: var(--mistral-beige-deep); }
+    .hover\\:bg-mistral-cream-deeper:hover { background-color: var(--mistral-cream-deeper) !important; }
+    .hover\\:text-mistral-ink:hover { color: var(--mistral-ink) !important; }
   </style>
 </head>
-<body class="p-4 md:p-8">
-  <div class="max-w-6xl mx-auto">
-    <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div>
-        <div class="flex items-center gap-3">
-          <a href="https://github.com/melihkarasu" target="_blank" class="text-mistral-slate hover:text-teal-500 transition text-sm flex items-center gap-1">&larr; GitHub Profiline Dön</a>
-          <span class="text-mistral-stone">|</span>
-          <span class="px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-600 text-xs font-semibold">Open Source Edition</span>
+<body class="p-4 sm:p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Üst Başlık & Navigasyon -->
+      <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-normal font-editorial tracking-tight mt-1.5 text-mistral-ink flex items-center gap-2">
+            <span>🌐</span> IP Coğrafi Konum & Ağ İstihbaratı
+          </h1>
+          <p class="text-mistral-slate text-sm mt-0.5 font-normal">
+            ip-api altyapısı ve SSRF korumalı ağ teşhisi ile IP lokasyonu, İnternet Servis Sağlayıcısı (ISP), ASN ve harita koordinatları.
+          </p>
         </div>
-        <h1 class="text-3xl sm:text-4xl font-normal font-editorial tracking-tight mt-1.5 text-mistral-ink flex items-center gap-2"><span>📍</span> IP Coğrafi Konum & İstihbarat</h1>
+
+        <div class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-mistral-hairline text-xs text-mistral-ink shadow-xs">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          <span class="font-medium" id="ip-badge-status">Teşhis Hazır</span>
+        </div>
       </div>
-    </div>
-    
+
+      <!-- SORGULAMA KONTROLLERİ -->
+      <div class="p-6 rounded-2xl bg-white border border-mistral-hairline shadow-sm mb-8 space-y-4">
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <input 
+              type="text" 
+              id="input-ip" 
+              placeholder="IP adresi girin (örn: 8.8.8.8 veya 1.1.1.1) ya da boş bırakıp kendi IP'nizi arayın..." 
+              onkeydown="if(event.key==='Enter') lookupIp()"
+              class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white border border-mistral-hairline text-sm text-mistral-ink placeholder:text-mistral-stone focus:outline-none focus:border-mistral-orange transition">
+            <span class="absolute left-3.5 top-3 text-mistral-stone text-sm">🔎</span>
+          </div>
+          <button 
+            type="button" 
+            onclick="lookupIp()" 
+            class="px-5 py-2.5 rounded-md bg-mistral-orange hover:bg-mistral-orange-deep text-white text-xs font-medium transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
+            <span>Sorgula</span> &rarr;
+          </button>
+          <button 
+            type="button" 
+            onclick="lookupSelfIp()" 
+            class="px-4 py-2.5 rounded-md text-mistral-ink font-bold bg-mistral-cream hover:bg-mistral-cream-deeper text-mistral-ink border border-mistral-beige-deep text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer">
+            <span>📍</span> Kendi IP'mi Getir
+          </button>
+        </div>
+
+        <div id="ip-error-box" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium"></div>
+      </div>
+
+      <!-- HARİTA VE DETAY KARTLARI -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
+        <!-- Sol: Ağ & Konum Bilgi Paneli (5 Kolon) -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="p-6 rounded-2xl bg-white border border-mistral-hairline shadow-sm space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-mistral-hairline">
+              <span class="text-xs text-mistral-stone font-semibold uppercase tracking-wider">Tespit Edilen IP</span>
+              <strong class="text-base font-mono font-bold text-mistral-orange" id="res-ip">--</strong>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div class="p-3 rounded-xl bg-mistral-cream border border-mistral-beige-deep flex justify-between items-center">
+                <span class="text-mistral-slate">Ülke & Kod:</span>
+                <strong class="text-mistral-ink text-sm font-editorial" id="res-country">--</strong>
+              </div>
+              <div class="p-3 rounded-xl bg-mistral-cream border border-mistral-beige-deep flex justify-between items-center">
+                <span class="text-mistral-slate">Şehir / Bölge:</span>
+                <strong class="text-mistral-ink text-sm font-editorial" id="res-city">--</strong>
+              </div>
+              <div class="p-3 rounded-xl bg-mistral-cream border border-mistral-beige-deep flex justify-between items-center">
+                <span class="text-mistral-slate">İnternet Servis Sağlayıcı (ISP):</span>
+                <strong class="text-mistral-ink text-right max-w-[200px] truncate" id="res-isp">--</strong>
+              </div>
+              <div class="p-3 rounded-xl bg-mistral-cream border border-mistral-beige-deep flex justify-between items-center">
+                <span class="text-mistral-slate">Otonom Sistem (ASN):</span>
+                <strong class="text-mistral-ink text-right max-w-[200px] truncate font-mono text-[11px]" id="res-as">--</strong>
+              </div>
+              <div class="p-3 rounded-xl bg-mistral-cream border border-mistral-beige-deep flex justify-between items-center">
+                <span class="text-mistral-slate">Saat Dilimi:</span>
+                <strong class="text-mistral-ink" id="res-tz">--</strong>
+              </div>
+              <div class="p-3 rounded-xl bg-mistral-cream border border-mistral-beige-deep flex justify-between items-center">
+                <span class="text-mistral-slate">Posta Kodu:</span>
+                <strong class="text-mistral-ink" id="res-zip">--</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Strix SSRF Koruma Rozeti -->
+          <div class="p-4 rounded-xl bg-mistral-cream-light border border-mistral-beige-deep text-xs text-mistral-slate space-y-1.5">
+            <div class="font-bold text-mistral-ink flex items-center gap-1.5">
+              <span>🛡️</span> Strix SSRF Savunması Aktif
+            </div>
+            <p class="leading-relaxed text-[11px]">
+              Dahili ağlar, yerel IP adresleri (127.0.0.1, 10.x, 192.168.x, 172.16-31.x) ve bulut metaveri IP'si sunucu tarafında filtrelenir; sadece genel internet adresleri çözümlenir.
+            </p>
+          </div>
+        </div>
+
+        <!-- Sağ: Leaflet Haritası (7 Kolon) -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="p-3 rounded-2xl bg-white border border-mistral-hairline shadow-sm relative overflow-hidden">
+            <div id="geo-map" class="w-full h-[450px] rounded-xl z-10"></div>
+          </div>
+        </div>
+      </div>
   </div>
+
+  <footer class="mt-16 text-center text-xs text-mistral-stone border-t border-mistral-hairline pt-6">
+    <p>Açık Kaynak Standalone Sürüm • Veriler: <a href="https://ipwho.is/" target="_blank" rel="noopener" class="underline hover:text-mistral-ink">ipwho.is</a> (HTTPS + CORS destekli) • Harita: <a href="https://leafletjs.com/" target="_blank" rel="noopener" class="underline hover:text-mistral-ink">Leaflet</a> + OpenStreetMap</p>
+  </footer>
+
+  <script src="js/app.js"></script>
 </body>
 </html>

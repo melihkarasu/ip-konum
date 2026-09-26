@@ -18,13 +18,31 @@ let geoMap = null;
           errBox.classList.add('hidden');
 
           try {
-            const url = queryIp ? `/api/ip/lookup?ip=${encodeURIComponent(queryIp)}` : '/api/ip/lookup';
+            // Standalone: ipwho.is doğrudan (HTTPS + CORS-açık; ip-api.com ücretsiz katmanı HTTPS'te 403 veriyor)
+            const url = queryIp ? `https://ipwho.is/${encodeURIComponent(queryIp)}` : 'https://ipwho.is/';
             const res = await fetch(url);
-            const data = await res.json();
+            const raw = await res.json();
 
-            if (!data.success) {
-              throw new Error(data.error || 'Konum bilgisi alınamadı');
+            if (!raw.success) {
+              throw new Error(raw.message || 'Konum bilgisi alınamadı');
             }
+
+            // ipwho.is şemasını uygulamanın beklediği biçime normalize et
+            const data = {
+              success: true,
+              ip: raw.ip,
+              country: raw.country,
+              countryCode: raw.country_code,
+              regionName: raw.region,
+              city: raw.city,
+              zip: raw.postal,
+              lat: raw.latitude,
+              lon: raw.longitude,
+              timezone: (raw.timezone && raw.timezone.id) || '-',
+              isp: (raw.connection && raw.connection.isp) || '-',
+              org: (raw.connection && raw.connection.org) || '-',
+              as: (raw.connection && raw.connection.asn) ? 'AS' + raw.connection.asn : '-'
+            };
 
             document.getElementById('res-ip').innerText = data.ip;
             document.getElementById('res-country').innerText = `${data.country} (${data.countryCode})`;

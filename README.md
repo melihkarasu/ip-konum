@@ -9,7 +9,7 @@ ip-api ve SSRF korumalı altyapıyla IP lokasyonu, İnternet Servis Sağlayıcı
 
 ## 🚀 Hızlı Başlangıç
 1. Bu repoyu klonlayın.
-2.  dosyasını tarayıcıda açın.
+2. `index.html` dosyasını tarayıcıda açın.
 
 
 
